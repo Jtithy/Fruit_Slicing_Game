@@ -34,3 +34,33 @@ class Fruit {
         ctx.fill();
     }
 }
+
+//Spawn Fruit
+function spawnFruit() {
+    fruits.push(new Fruit());
+}
+
+//Every Sec Spawn
+setInterval(spawnFruit, 1000);
+
+//Update
+function update() {
+    fruits.forEach(fruit => fruit.update());
+    fruits = fruits.filter(fruit => fruit.y < canvas.height + 100);
+}
+
+//Draw
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    fruits.forEach(fruit => fruit.draw());
+}
+
+//Game Loop
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+//Function call
+gameLoop();
