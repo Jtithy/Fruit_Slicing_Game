@@ -64,3 +64,62 @@ function gameLoop() {
 
 //Function call
 gameLoop();
+
+//Mouse Position
+let mouse = {
+    x: 0,
+    y: 0,
+    isDown: false
+};
+
+//Events
+canvas.addEventListener("mousedown", () => {
+    mouse.isDown = true;
+});
+
+canvas.addEventListener("mouseup", () => {
+    mouse.isDown = false;
+});
+
+canvas.addEventListener("mousemove", (e) => {
+    const rect = canvas.getBoundingClientRect();
+
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+});
+
+//Touch Events
+canvas.addEventListener("touchstart", () => {
+    mouse.isDown = true;
+});
+
+canvas.addEventListener("touchend", () => {
+    mouse.isDown = false;
+});
+
+canvas.addEventListener("touchmove", (e) => {
+    const rect = canvas.getBoundingClientRect();
+
+    mouse.x = e.touches[0].clientX - rect.left;
+    mouse.y = e.touches[0].clientY - rect.top;
+
+    e.preventDefault();
+});
+
+//Slice Fruit
+function sliceFruit() {
+    if (!mouse.isDown) return;
+    fruits = fruits.filter(fruit => {
+        const dx = mouse.x - fruit.x;
+        const dy = mouse.y - fruit.y;
+
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < fruit.radius) {
+            score += 10;
+            document.getElementById("score").textContent = score;
+            return false;
+        }
+        return true;
+    });
+}
+
