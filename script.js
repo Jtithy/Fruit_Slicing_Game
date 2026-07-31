@@ -137,7 +137,14 @@ function spawnObject() {
 }
 
 //Every Sec Spawn
-setInterval(spawnObject, spawnSpeed);
+setInterval(() => {
+    if (spwanSpeed > 300) {
+        spwanSpeed -= 100;
+    }
+    if (bombChance < 0.4) {
+        bombChance += 0.03;
+    }
+}, 15000);
 
 //Mouse Position
 let mouse = {
