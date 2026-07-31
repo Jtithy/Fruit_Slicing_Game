@@ -123,3 +123,26 @@ function sliceFruit() {
     });
 }
 
+//Slice Cursor
+function drawCursor() {
+    ctx.beginPath();
+    ctx.strokeStyle = "#00ff88";
+    ctx.lineWidth = 3;
+    ctx.moveTo(mouse.x - 10, mouse.y);
+    ctx.lineTo(mouse.x + 10, mouse.y);
+    ctx.moveTo(mouse.x, mouse.y - 10);
+    ctx.lineTo(mouse.x, mouse.y + 10);
+    ctx.stroke();
+}
+
+//Game Loop Upadated
+function gameLoop() {
+    update();
+    sliceFruit();
+    draw();
+    drawCursor();
+    requestAnimationFrame(gameLoop);
+}
+gameLoop();
+
+//
