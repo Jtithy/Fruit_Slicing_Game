@@ -312,3 +312,17 @@ function gameLoop() {
 }
 gameLoop();
 
+//Restart Game
+document.addEventListener("keydown", (e) => {
+    if (e.key === "r" || e.key === "R") {
+        fruits = [];
+        bombs = [];
+        particles = [];
+        trail = [];
+        score = 0;
+        lives = 3;
+        gameOver = false;
+        document.getElementById("score").textContent = score;
+        document.getElementById("lives").textContent = lives;
+    }
+});
