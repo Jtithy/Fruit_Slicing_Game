@@ -212,6 +212,16 @@ function sliceFruit() {
         }
         return true;
     });
+    bombs = bombs.filter(bomb => {
+        const dx = mouse.x - bomb.x;
+        const dy = mouse.y - bomb.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (mouse.isDown && distance < bomb.radius) {
+            gameOver = true;
+            return false;
+        }
+        return true;
+    });
 }
 
 //Update
@@ -221,8 +231,24 @@ function update() {
     particles.forEach(p => p.update());
     //Remove Dead Particles
     particles = particles.filter(p => p.life > 0);
+    //Update Bombs
+    bombs.forEach(bomb => bomb.update());
+    //Remove Dead Bombs
+    bombs = bombs.filter(bomb => bomb.y < canvas.height + 100);
 
-    fruits = fruits.filter(fruit => fruit.y < canvas.height + 100);
+    //Loose Lives
+    fruits = fruits.filter(fruit => {
+        if (fruit.y > canvas.height + 60) {
+            lives--;
+            document.getElementById("lives").textContent = lives;
+            if (lives <= 0) {
+                gameOver = true;
+                alert("Game Over! Your Score: " + score);
+            }
+            return false;
+        }
+        return true;
+    });
 }
 
 //Draw
@@ -231,6 +257,19 @@ function draw() {
     fruits.forEach(fruit => fruit.draw());
     //Draw Particles
     particles.forEach(p => p.draw());
+    //Draw Bombs
+    bombs.forEach(bomb => bomb.draw());
+
+    if (gameOver) {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        ctx.font = "50px Arial";
+        ctx.textAlign = 'center';
+        ctx.fillText("GAME OVER", canvas.width / 2, 300);
+        ctx.font = "30px Arial";
+        ctx.fillText("Press R to Restart", canvas.width / 2, 360);
+    }
 }
 
 //Draw trail 
@@ -260,13 +299,16 @@ function drawCursor() {
 
 //Game Loop Upadated
 function gameLoop() {
-    update();
-    sliceFruit();
-    draw();
-    drawCursor();
-    drawTrail();
-    drawCursor();
-    requestAnimationFrame(gameLoop);
+    if (!gameOver) {
+        update();
+        sliceFruit();
+    }
+    else {
+        draw();
+        drawTrail();
+        drawCursor();
+        requestAnimationFrame(gameLoop);
+    }
 }
 gameLoop();
 
