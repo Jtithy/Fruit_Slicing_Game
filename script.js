@@ -11,6 +11,37 @@ let score = 0;
 
 const gravity = 0.25;
 
+//Particle Class
+class Particle {
+    constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.radius = Math.random() * 4 + 2;
+        this.vx = (Math.random() - 0.5) * 8;
+        this.vy = (Math.random() - 0.5) * 8;
+        this.life = 40;
+        this.color = color;
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        this.vy += 0.15;
+
+        this.life--;
+    }
+    draw() {
+        ctx.save();
+        ctx.globalAlpha = this.life / 40;
+        ctx.beginPath();
+        ctx.fillStyle = this.color;
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+    }
+}
+
 //Fruit Class
 class Fruit {
     constructor() {
@@ -145,4 +176,3 @@ function gameLoop() {
 }
 gameLoop();
 
-//
