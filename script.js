@@ -87,25 +87,6 @@ function spawnFruit() {
 //Every Sec Spawn
 setInterval(spawnFruit, 1000);
 
-//Update
-function update() {
-    fruits.forEach(fruit => fruit.update());
-    //Update Particles
-    particles.forEach(p => p.update());
-    //Remove Dead Particles
-    particles = particles.filter(p => p.life > 0);
-
-    fruits = fruits.filter(fruit => fruit.y < canvas.height + 100);
-}
-
-//Draw
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    fruits.forEach(fruit => fruit.draw());
-    //Draw Particles
-    particles.forEach(p => p.draw());
-}
-
 //Mouse Position
 let mouse = {
     x: 0,
@@ -181,16 +162,23 @@ function sliceFruit() {
     });
 }
 
-//Slice Cursor
-function drawCursor() {
-    ctx.beginPath();
-    ctx.strokeStyle = "#00ff88";
-    ctx.lineWidth = 3;
-    ctx.moveTo(mouse.x - 10, mouse.y);
-    ctx.lineTo(mouse.x + 10, mouse.y);
-    ctx.moveTo(mouse.x, mouse.y - 10);
-    ctx.lineTo(mouse.x, mouse.y + 10);
-    ctx.stroke();
+//Update
+function update() {
+    fruits.forEach(fruit => fruit.update());
+    //Update Particles
+    particles.forEach(p => p.update());
+    //Remove Dead Particles
+    particles = particles.filter(p => p.life > 0);
+
+    fruits = fruits.filter(fruit => fruit.y < canvas.height + 100);
+}
+
+//Draw
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    fruits.forEach(fruit => fruit.draw());
+    //Draw Particles
+    particles.forEach(p => p.draw());
 }
 
 //Draw trail 
@@ -203,6 +191,18 @@ function drawTrail() {
     for (let i = 1; i < trail.length; i++) {
         ctx.lineTo(trail[i].x, trail[i].y);
     }
+    ctx.stroke();
+}
+
+//Slice Cursor
+function drawCursor() {
+    ctx.beginPath();
+    ctx.strokeStyle = "#00ff88";
+    ctx.lineWidth = 3;
+    ctx.moveTo(mouse.x - 10, mouse.y);
+    ctx.lineTo(mouse.x + 10, mouse.y);
+    ctx.moveTo(mouse.x, mouse.y - 10);
+    ctx.lineTo(mouse.x, mouse.y + 10);
     ctx.stroke();
 }
 
