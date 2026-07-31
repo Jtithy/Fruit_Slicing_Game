@@ -116,11 +116,28 @@ class Bomb {
 
 //Spawn Fruit
 function spawnFruit() {
-    fruits.push(new Fruit());
+    if (gameOver) return;
+    if (Math.random() < bombChance) {
+        bombs.push(new Bomb());
+    }
+    else {
+        fruits.push(new Fruit());
+    }
+}
+
+//Spawn Object
+function spawnObject() {
+    if (gameOver) return;
+    if (Math.random() < bombChance) {
+        bombs.push(new Bomb());
+    }
+    else {
+        fruits.push(new Fruit());
+    }
 }
 
 //Every Sec Spawn
-setInterval(spawnFruit, 1000);
+setInterval(spawnObject, spawnSpeed);
 
 //Mouse Position
 let mouse = {
