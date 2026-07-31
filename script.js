@@ -11,6 +11,19 @@ let score = 0;
 
 const gravity = 0.25;
 
+//Particle Array
+let particles = [];
+
+//Swipe Trail
+let trail = [];
+
+//Juice Explosion
+function createParticles(x, y, color) {
+    for (let i = 0; i < 20; i++) {
+        particles.push(new Particle(x, y, color));
+    }
+}
+
 //Particle Class
 class Particle {
     constructor(x, y, color) {
@@ -77,6 +90,11 @@ setInterval(spawnFruit, 1000);
 //Update
 function update() {
     fruits.forEach(fruit => fruit.update());
+    //Update Particles
+    particles.forEach(p => p.update());
+    //Remove Dead Particles
+    particles = particles.filter(p => p.life > 0);
+
     fruits = fruits.filter(fruit => fruit.y < canvas.height + 100);
 }
 
@@ -84,17 +102,9 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     fruits.forEach(fruit => fruit.draw());
+    //Draw Particles
+    particles.forEach(p => p.draw());
 }
-
-//Game Loop
-function gameLoop() {
-    update();
-    draw();
-    requestAnimationFrame(gameLoop);
-}
-
-//Function call
-gameLoop();
 
 //Mouse Position
 let mouse = {
@@ -117,6 +127,14 @@ canvas.addEventListener("mousemove", (e) => {
 
     mouse.x = e.clientX - rect.left;
     mouse.y = e.clientY - rect.top;
+
+    trail.push({
+        x: mouse.x,
+        y: mouse.y
+    });
+    if (trail.length > 10) {
+        trail.shift();
+    }
 });
 
 //Touch Events
@@ -134,6 +152,14 @@ canvas.addEventListener("touchmove", (e) => {
     mouse.x = e.touches[0].clientX - rect.left;
     mouse.y = e.touches[0].clientY - rect.top;
 
+    trail.push({
+        x: mouse.x,
+        y: mouse.y
+    });
+    if (trail.length > 10) {
+        trail.shift();
+    }
+
     e.preventDefault();
 });
 
@@ -148,6 +174,7 @@ function sliceFruit() {
         if (distance < fruit.radius) {
             score += 10;
             document.getElementById("score").textContent = score;
+            createParticles(fruit.x, fruit.y, fruit.color);
             return false;
         }
         return true;
@@ -166,11 +193,26 @@ function drawCursor() {
     ctx.stroke();
 }
 
+//Draw trail 
+function drawTrail() {
+    if (trail.length < 2) return;
+    ctx.beginPath();
+    ctx.strokeStyle = "rgba(0, 255, 136, 0.5)";
+    ctx.lineWidth = 5;
+    ctx.moveTo(trail[0].x, trail[0].y);
+    for (let i = 1; i < trail.length; i++) {
+        ctx.lineTo(trail[i].x, trail[i].y);
+    }
+    ctx.stroke();
+}
+
 //Game Loop Upadated
 function gameLoop() {
     update();
     sliceFruit();
     draw();
+    drawCursor();
+    drawTrail();
     drawCursor();
     requestAnimationFrame(gameLoop);
 }
