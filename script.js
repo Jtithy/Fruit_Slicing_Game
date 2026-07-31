@@ -17,6 +17,15 @@ let particles = [];
 //Swipe Trail
 let trail = [];
 
+//Bomb Array
+let bomb = [];
+
+let lives = 3;
+let gameOver = false;
+//Spawn Sppen changes in every1 sec
+let spawnSpeed = 1000;
+let bombChance = 0.2;
+
 //Juice Explosion
 function createParticles(x, y, color) {
     for (let i = 0; i < 20; i++) {
