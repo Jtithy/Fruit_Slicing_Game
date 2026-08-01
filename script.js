@@ -26,6 +26,18 @@ let gameOver = false;
 let spawnSpeed = 1000;
 let bombChance = 0.2;
 
+//Load Images
+const fruitImages = [
+    "assests/apple.png",
+    "assets/banaba.png",
+    "assets/grapes.png",
+    "assets/orange.png",
+    "assets/watermelon.png",
+    "assets/pineapple.png",
+    "assets/strawberry.png",
+    "assets/kiwi.png"
+];
+
 //Juice Explosion
 function createParticles(x, y, color) {
     for (let i = 0; i < 20; i++) {
