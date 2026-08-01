@@ -2,13 +2,14 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = 500;
-canvas.height = 200;
+canvas.width = Math.min(window.innerWidth, 600);
+canvas.height = Math.min(window.innerHeight, 800);
 
 //Variables
 let fruits = [];
 let score = 0;
 let highscore = Number(localStorage.getItem("highscore")) || 0;
+let combo = 0;
 
 const gravity = 0.25;
 
@@ -223,6 +224,12 @@ canvas.addEventListener("touchmove", (e) => {
     e.preventDefault();
 });
 
+//Resize canvas
+window.addEventListener("resize", () => {
+    canvas.width = Math.min(window.innerWidth, 600);
+    canvas.height = Math.min(window.innerHeight, 800);
+});
+
 //Slice Fruit
 function sliceFruit() {
     if (!mouse.isDown) return;
@@ -232,7 +239,9 @@ function sliceFruit() {
 
         const distance = Math.sqrt(dx * dx + dy * dy);
         if (distance < fruit.radius) {
-            score += 10;
+            combo++;
+            document.getElementById("combo").textContent = combo;
+            score += 10 * combo;
             document.getElementById("score").textContent = score;
             document.getElementById("highscore").textContent = highScore;
             if (score > highScore) {
