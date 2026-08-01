@@ -10,6 +10,7 @@ let fruits = [];
 let score = 0;
 let highscore = Number(localStorage.getItem("highscore")) || 0;
 let combo = 0;
+let spwanTimer = 0;
 
 const gravity = 0.25;
 
