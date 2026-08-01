@@ -8,6 +8,7 @@ canvas.height = 200;
 //Variables
 let fruits = [];
 let score = 0;
+let highscore = Number(localStorage.getItem("highscore")) || 0;
 
 const gravity = 0.25;
 
@@ -233,6 +234,14 @@ function sliceFruit() {
         if (distance < fruit.radius) {
             score += 10;
             document.getElementById("score").textContent = score;
+            document.getElementById("highscore").textContent = highScore;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem(
+                    "highscore", highscore
+                );
+                document.getElementById("highscore").textContent = highScore;
+            }
             createParticles(fruit.x, fruit.y, fruit.color);
             return false;
         }
