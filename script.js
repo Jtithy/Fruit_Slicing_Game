@@ -85,6 +85,8 @@ class Fruit {
         this.vx = (Math.random() - .5) * 8;
         this.vy = -(Math.random() * 6 + 12);
         this.color = `hsl(${Math.random() * 360},80%,60%)`;
+        this.image = new Image();
+        this.image.src = fruitImages[Math.floor(Math.random() * fruitImages.length)];
     }
     update() {
         this.x += this.vx;
@@ -93,10 +95,13 @@ class Fruit {
         this.vy += gravity;
     }
     draw() {
-        ctx.beginPath();
-        ctx.fillStyle = this.color;
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.drawImage(
+            this.image,
+            this.x - this.radius,
+            this.y - this.radius,
+            this.radius * 2,
+            this.radius * 2
+        );
     }
 }
 
