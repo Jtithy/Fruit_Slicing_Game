@@ -11,7 +11,8 @@ let score = 0;
 let highscore = Number(localStorage.getItem("highscore")) || 0;
 let combo = 0;
 let spwanTimer = 0;
-
+let started = false;
+let paused = false;
 const gravity = 0.25;
 
 //Particle Array
@@ -40,6 +41,16 @@ const fruitImages = [
     "assets/strawberry.png",
     "assets/kiwi.png"
 ];
+
+document.getElementById("startBtn").onclick = () => {
+    started = true;
+}
+
+document.getElementById("keydown", e => {
+    if (e.key === 'p' || e.key === "P") {
+        paused = !paused;
+    }
+});
 
 //Juice Explosion
 function createParticles(x, y, color) {
@@ -344,7 +355,7 @@ function drawCursor() {
 
 //Game Loop Upadated
 function gameLoop() {
-    if (!gameOver) {
+    if (started && !gameOver) {
         update();
         sliceFruit();
     }
