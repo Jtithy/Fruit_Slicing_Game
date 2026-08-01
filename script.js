@@ -113,6 +113,8 @@ class Bomb {
         this.y = canvas.height + 50;
         this.vx = (Math.random() - .5) * 8;
         this.vy = -(Math.random() * 6 + 12);
+        this.image = new Image();
+        this.image.src = "assets/bomb.png";
     }
     update() {
         this.x += this.vx;
@@ -121,13 +123,13 @@ class Bomb {
         this.vy += gravity;
     }
     draw() {
-        ctx.beginPath();
-        ctx.fillStyle = "black";
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = "red";
-        ctx.lineWidth = 3;
-        ctx.stroke();
+        ctx.drawImage(
+            this.image,
+            this.x - this.radius,
+            this.y - this.radius,
+            this.radius * 2,
+            this.radius * 2
+        );
     }
 }
 
