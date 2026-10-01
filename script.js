@@ -5,12 +5,17 @@ const ctx = canvas.getContext("2d");
 canvas.width = Math.min(window.innerWidth, 600);
 canvas.height = Math.min(window.innerHeight, 800);
 
+//Sounds
+const sliceSound = new Audio("assets/slice.mp3");
+const bombSound = new Audio("assets/bomb.mp3");
+const gameOverSound = new Audio("assets/gameover.mp3");
 //Variables
 let fruits = [];
 let score = 0;
-let highscore = Number(localStorage.getItem("highscore")) || 0;
+let highScore = Number(localStorage.getItem("highscore")) || 0;
 let combo = 0;
-let spwanTimer = 0;
+let spawnTimer = 0;
+//Start Screen
 let started = false;
 let paused = false;
 const gravity = 0.25;
@@ -100,7 +105,11 @@ class Fruit {
         this.vy = -(Math.random() * 6 + 12);
         this.color = `hsl(${Math.random() * 360},80%,60%)`;
         this.image = new Image();
-        this.image.src = fruitImages[Math.floor(Math.random() * fruitImages.length)];
+
+        this.image.src =
+            fruitImages[
+            Math.floor(Math.random() * fruitImages.length)
+            ];
     }
     update() {
         this.x += this.vx;
@@ -109,13 +118,21 @@ class Fruit {
         this.vy += gravity;
     }
     draw() {
+
         ctx.drawImage(
+
             this.image,
+
             this.x - this.radius,
+
             this.y - this.radius,
+
             this.radius * 2,
+
             this.radius * 2
+
         );
+
     }
 }
 
@@ -137,13 +154,21 @@ class Bomb {
         this.vy += gravity;
     }
     draw() {
+
         ctx.drawImage(
+
             this.image,
+
             this.x - this.radius,
+
             this.y - this.radius,
+
             this.radius * 2,
+
             this.radius * 2
+
         );
+
     }
 }
 
@@ -171,8 +196,9 @@ function spawnObject() {
 
 //Every Sec Spawn
 setInterval(() => {
-    if (spwanSpeed > 300) {
-        spwanSpeed -= 100;
+    spawnTimer++;
+    if (spawnSpeed > 300) {
+        spawnSpeed -= 100;
     }
     if (bombChance < 0.4) {
         bombChance += 0.03;
@@ -358,6 +384,9 @@ function gameLoop() {
     if (started && !gameOver) {
         update();
         sliceFruit();
+    }
+    else if (!paused) {
+        update();
     }
     else {
         draw();
