@@ -27,7 +27,7 @@ let particles = [];
 let trail = [];
 
 //Bomb Array
-let bomb = [];
+let bombs = [];
 
 let lives = 3;
 let gameOver = false;
@@ -37,8 +37,8 @@ let bombChance = 0.2;
 
 //Load Images
 const fruitImages = [
-    "assests/apple.png",
-    "assets/banaba.png",
+    "assets/apple.png",
+    "assets/banana.png",
     "assets/grapes.png",
     "assets/orange.png",
     "assets/watermelon.png",
