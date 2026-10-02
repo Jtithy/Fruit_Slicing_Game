@@ -4,26 +4,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Fruit Slicing Game</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div id="gameContainer">
-        <div id="scoreBoard">
-            Score: <span id="score">0</span>
-            <br>
-            High Score:
-            <span id="highscore">0</span>
-            Lives: <span id="lives">3</span>
-            Combo: <span id="combo">0</span>
 
-            <button id="startBtn">Start Game</button>
-        </div>
+    <div id="gameContainer">
+
         <canvas id="gameCanvas"></canvas>
+
+        <div id="scoreBoard">
+
+            <div>
+                Score:
+                <span id="score">0</span>
+            </div>
+
+            <div>
+                High Score:
+                <span id="highscore">0</span>
+            </div>
+
+            <div>
+                Lives:
+                <span id="lives">3</span>
+            </div>
+
+            <div>
+                Combo:
+                <span id="combo">0</span>
+            </div>
+
+        </div>
+
+        <button id="startBtn">
+            START GAME
+        </button>
+
     </div>
 
     <script src="script.js"></script>
+
 </body>
 
 </html>
