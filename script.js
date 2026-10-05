@@ -114,15 +114,16 @@ class Particle {
         this.x = x;
         this.y = y;
 
-        this.radius = Math.random() * 4 + 2;
+        this.radius =
+            Math.random() * 5 + 2;
 
         this.vx =
-            (Math.random() - 0.5) * 8;
+            (Math.random() - 0.5) * 12;
 
         this.vy =
-            (Math.random() - 0.5) * 8;
+            (Math.random() - 0.5) * 12;
 
-        this.life = 40;
+        this.life = 45;
 
         this.color = color;
     }
@@ -169,7 +170,7 @@ class Particle {
 
 function createParticles(x, y, color) {
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 35; i++) {
 
         particles.push(
             new Particle(
@@ -201,13 +202,19 @@ class Fruit {
             canvas.height + 50;
 
         this.vx =
-            (Math.random() - 0.5) * 8;
+            (Math.random() - 0.5) * 10;
 
         this.vy =
-            -(Math.random() * 6 + 12);
+            -(Math.random() * 5 + 13);
 
         this.color =
             `hsl(${Math.random() * 360}, 80%, 60%)`;
+
+        this.rotation =
+            Math.random() * Math.PI * 2;
+
+        this.rotationSpeed =
+            (Math.random() - 0.5) * 0.15;
 
         this.image = new Image();
 
@@ -226,20 +233,67 @@ class Fruit {
         this.y += this.vy;
 
         this.vy += 0.25;
+        this.rotation += this.rotationSpeed;
     }
 
     draw() {
 
+        ctx.save();
+
+        ctx.translate(
+            this.x,
+            this.y
+        );
+
+        ctx.rotate(
+            this.rotation
+        );
+
         ctx.drawImage(
             this.image,
-            this.x - this.radius,
-            this.y - this.radius,
+            -this.radius,
+            -this.radius,
             this.radius * 2,
             this.radius * 2
         );
+
+        ctx.restore();
     }
 }
 
+
+// ===============================
+// Combo
+// ===============================
+function drawCombo() {
+
+    if (combo < 2) {
+        return;
+    }
+
+    ctx.save();
+
+    ctx.textAlign = "center";
+
+    ctx.font =
+        "bold 32px Arial";
+
+    ctx.fillStyle =
+        "#ffd700";
+
+    ctx.shadowBlur = 15;
+
+    ctx.shadowColor =
+        "#ff8c00";
+
+    ctx.fillText(
+        combo + " COMBO!",
+        canvas.width / 2,
+        90
+    );
+
+    ctx.restore();
+}
 
 // ===============================
 // BOMB CLASS
@@ -753,43 +807,72 @@ function draw() {
 
 function drawTrail() {
 
-    if (
-        !mouse.isDown ||
-        trail.length < 2
-    ) {
+    if (!mouse.isDown || trail.length < 2) {
         return;
     }
 
+    // Glow
+    ctx.save();
 
     ctx.beginPath();
-
-    ctx.strokeStyle =
-        "rgba(255, 255, 255, 0.8)";
-
-    ctx.lineWidth = 5;
-
-    ctx.lineCap = "round";
 
     ctx.moveTo(
         trail[0].x,
         trail[0].y
     );
 
-
-    for (
-        let i = 1;
-        i < trail.length;
-        i++
-    ) {
-
+    for (let i = 1; i < trail.length; i++) {
         ctx.lineTo(
             trail[i].x,
             trail[i].y
         );
     }
 
+    ctx.strokeStyle =
+        "rgba(120, 220, 255, 0.25)";
+
+    ctx.lineWidth = 18;
+
+    ctx.lineCap = "round";
+
+    ctx.lineJoin = "round";
+
+    ctx.shadowBlur = 25;
+
+    ctx.shadowColor =
+        "rgba(100, 220, 255, 1)";
 
     ctx.stroke();
+
+
+    // Main sword
+    ctx.beginPath();
+
+    ctx.moveTo(
+        trail[0].x,
+        trail[0].y
+    );
+
+    for (let i = 1; i < trail.length; i++) {
+        ctx.lineTo(
+            trail[i].x,
+            trail[i].y
+        );
+    }
+
+    ctx.strokeStyle =
+        "rgba(230, 250, 255, 0.95)";
+
+    ctx.lineWidth = 5;
+
+    ctx.shadowBlur = 12;
+
+    ctx.shadowColor =
+        "#ffffff";
+
+    ctx.stroke();
+
+    ctx.restore();
 }
 
 
@@ -803,38 +886,29 @@ function drawCursor() {
         return;
     }
 
+    ctx.save();
 
     ctx.beginPath();
 
-    ctx.strokeStyle =
-        "#00ff88";
-
-    ctx.lineWidth = 3;
-
-
-    ctx.moveTo(
-        mouse.x - 10,
-        mouse.y
-    );
-
-    ctx.lineTo(
-        mouse.x + 10,
-        mouse.y
-    );
-
-
-    ctx.moveTo(
+    ctx.arc(
         mouse.x,
-        mouse.y - 10
+        mouse.y,
+        7,
+        0,
+        Math.PI * 2
     );
 
-    ctx.lineTo(
-        mouse.x,
-        mouse.y + 10
-    );
+    ctx.fillStyle =
+        "rgba(255,255,255,0.9)";
 
+    ctx.shadowBlur = 20;
 
-    ctx.stroke();
+    ctx.shadowColor =
+        "#8eeaff";
+
+    ctx.fill();
+
+    ctx.restore();
 }
 
 
@@ -970,6 +1044,8 @@ function gameLoop() {
 
 
     draw();
+
+    drawCombo();
 
     drawTrail();
 
