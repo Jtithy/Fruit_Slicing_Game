@@ -29,6 +29,7 @@ const gameOverSound = new Audio("assets/gameover.mp3");
 // ===============================
 
 let fruits = [];
+let slicedFruits = [];
 let bombs = [];
 let particles = [];
 let trail = [];
@@ -36,6 +37,7 @@ let trail = [];
 let score = 0;
 let combo = 0;
 let lives = 3;
+let sliceFlash = 0;
 
 let highScore =
     Number(localStorage.getItem("highscore")) || 0;
@@ -261,6 +263,135 @@ class Fruit {
     }
 }
 
+// ===============================
+// SLICED FRUIT CLASS
+// ===============================
+
+class SlicedFruit {
+
+    constructor(x, y, image, side) {
+
+        this.x = x;
+        this.y = y;
+
+        this.image = image;
+
+        this.radius = 30;
+
+        this.side = side;
+
+        this.vx =
+            side === "left"
+                ? -3 - Math.random() * 2
+                : 3 + Math.random() * 2;
+
+        this.vy =
+            -2 - Math.random() * 3;
+
+        this.gravity = 0.3;
+
+        this.rotation =
+            side === "left"
+                ? -0.2
+                : 0.2;
+
+        this.rotationSpeed =
+            side === "left"
+                ? -0.08
+                : 0.08;
+
+        this.life = 70;
+    }
+
+    update() {
+
+        this.x += this.vx;
+
+        this.y += this.vy;
+
+        this.vy += this.gravity;
+
+        this.rotation +=
+            this.rotationSpeed;
+
+        this.life--;
+    }
+
+    draw() {
+
+        ctx.save();
+
+        ctx.translate(
+            this.x,
+            this.y
+        );
+
+        ctx.rotate(
+            this.rotation
+        );
+
+        ctx.beginPath();
+
+        if (this.side === "left") {
+
+            ctx.moveTo(
+                -this.radius,
+                -this.radius
+            );
+
+            ctx.lineTo(
+                0,
+                -this.radius
+            );
+
+            ctx.lineTo(
+                0,
+                this.radius
+            );
+
+            ctx.lineTo(
+                -this.radius,
+                this.radius
+            );
+
+        } else {
+
+            ctx.moveTo(
+                0,
+                -this.radius
+            );
+
+            ctx.lineTo(
+                this.radius,
+                -this.radius
+            );
+
+            ctx.lineTo(
+                this.radius,
+                this.radius
+            );
+
+            ctx.lineTo(
+                0,
+                this.radius
+            );
+        }
+
+        ctx.closePath();
+
+        ctx.clip();
+
+        ctx.drawImage(
+            this.image,
+            -this.radius,
+            -this.radius,
+            this.radius * 2,
+            this.radius * 2
+        );
+
+        ctx.restore();
+    }
+}
 
 // ===============================
 // Combo
@@ -558,7 +689,25 @@ function sliceFruit() {
                     fruit.y,
                     fruit.color
                 );
+                sliceFlash = 5;
 
+                slicedFruits.push(
+                    new SlicedFruit(
+                        fruit.x,
+                        fruit.y,
+                        fruit.image,
+                        "left"
+                    )
+                );
+
+                slicedFruits.push(
+                    new SlicedFruit(
+                        fruit.x,
+                        fruit.y,
+                        fruit.image,
+                        "right"
+                    )
+                );
 
                 sliceSound.currentTime = 0;
 
@@ -638,6 +787,16 @@ function update() {
     fruits.forEach(
         fruit => fruit.update()
     );
+
+    // FRUITS SLICE
+    slicedFruits.forEach(
+        fruit => fruit.update()
+    );
+
+    slicedFruits =
+        slicedFruits.filter(
+            fruit => fruit.life > 0
+        );
 
 
     // BOMBS
@@ -742,6 +901,10 @@ function draw() {
         fruit => fruit.draw()
     );
 
+    // FRUITS SLICE
+    slicedFruits.forEach(
+        fruit => fruit.draw()
+    );
 
     // BOMBS
 
@@ -756,6 +919,25 @@ function draw() {
         particle => particle.draw()
     );
 
+    // SlICES FLASH
+    if (sliceFlash > 0) {
+
+        ctx.save();
+
+        ctx.fillStyle =
+            "rgba(255, 255, 255, 0.12)";
+
+        ctx.fillRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        ctx.restore();
+
+        sliceFlash--;
+    }
 
     // GAME OVER
 
@@ -941,6 +1123,7 @@ document.addEventListener(
 function restartGame() {
 
     fruits = [];
+    slicedFruits = [];
     bombs = [];
     particles = [];
     trail = [];
