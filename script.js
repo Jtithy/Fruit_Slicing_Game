@@ -1,7 +1,4 @@
-// ===============================
 // CANVAS SETUP
-// ===============================
-
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -14,19 +11,13 @@ resizeCanvas();
 
 window.addEventListener("resize", resizeCanvas);
 
-
-// ===============================
 // SOUNDS
-// ===============================
 
 const sliceSound = new Audio("assets/slice.mp3");
 const bombSound = new Audio("assets/bomb.mp3");
 const gameOverSound = new Audio("assets/gameover.mp3");
 
-
-// ===============================
 // GAME VARIABLES
-// ===============================
 
 let fruits = [];
 let slicedFruits = [];
@@ -39,6 +30,9 @@ let combo = 0;
 let lives = 3;
 let sliceFlash = 0;
 
+let comboTimer = 0;
+const comboTimeLimit = 90;
+
 let highScore =
     Number(localStorage.getItem("highscore")) || 0;
 
@@ -46,21 +40,13 @@ let started = false;
 let paused = false;
 let gameOver = false;
 
-
-// ===============================
 // DIFFICULTY
-// ===============================
-
 let spawnTimer = 0;
 let spawnSpeed = 60;
 
 let bombChance = 0.15;
 
-
-// ===============================
 // FRUIT IMAGES
-// ===============================
-
 const fruitImages = [
     "assets/apple.png",
     "assets/banana.png",
@@ -72,17 +58,10 @@ const fruitImages = [
     "assets/kiwi.png"
 ];
 
-
-// ===============================
 // DISPLAY HIGH SCORE
-// ===============================
-
 document.getElementById("highscore").textContent = highScore;
 
-
-// ===============================
 // MOUSE
-// ===============================
 
 let mouse = {
     x: 0,
@@ -90,10 +69,12 @@ let mouse = {
     isDown: false
 };
 
+let previousMouse = {
+    x: 0,
+    y: 0
+};
 
-// ===============================
 // START BUTTON
-// ===============================
 
 document.getElementById("startBtn").onclick = () => {
 
@@ -144,8 +125,7 @@ class Particle {
 
         ctx.save();
 
-        ctx.globalAlpha =
-            this.life / 40;
+        ctx.globalAlpha = this.life / 45;
 
         ctx.fillStyle = this.color;
 
@@ -507,6 +487,8 @@ canvas.addEventListener(
     () => {
 
         mouse.isDown = true;
+        previousMouse.x = mouse.x;
+        previousMouse.y = mouse.y;
     }
 );
 
@@ -617,42 +599,54 @@ canvas.addEventListener(
     { passive: false }
 );
 
+//Distance from point to line segment
+function distancePointToSegment(px, py, x1, y1, x2, y2) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
 
-// ===============================
+    if (dx === 0 && dy === 0) {
+        return Math.hypot(px - x1, py - y1);
+    }
+
+    const t = Math.max(
+        0,
+        Math.min(
+            1,
+            ((px - x1) * dx + (py - y1) * dy) /
+            (dx * dx + dy * dy)
+        )
+    );
+
+    const closestX = x1 + t * dx;
+    const closestY = y1 + t * dy;
+
+    return Math.hypot(px - closestX, py - closestY);
+}
+
 // SLICE FRUIT
-// ===============================
-
 function sliceFruit() {
 
     if (!mouse.isDown) {
         return;
     }
 
-
     // FRUITS
-
     fruits = fruits.filter(
         (fruit) => {
 
-            const dx =
-                mouse.x - fruit.x;
+            const distance = distancePointToSegment(
+                fruit.x,
+                fruit.y,
+                previousMouse.x,
+                previousMouse.y,
+                mouse.x,
+                mouse.y
+            );
 
-            const dy =
-                mouse.y - fruit.y;
-
-            const distance =
-                Math.sqrt(
-                    dx * dx +
-                    dy * dy
-                );
-
-
-            if (
-                distance <
-                fruit.radius
-            ) {
+            if (distance < fruit.radius + 10) {
 
                 combo++;
+                comboTimer = comboTimeLimit;
 
                 score +=
                     10 * combo;
@@ -729,23 +723,16 @@ function sliceFruit() {
     bombs = bombs.filter(
         (bomb) => {
 
-            const dx =
-                mouse.x - bomb.x;
+            const distance = distancePointToSegment(
+                bomb.x,
+                bomb.y,
+                previousMouse.x,
+                previousMouse.y,
+                mouse.x,
+                mouse.y
+            );
 
-            const dy =
-                mouse.y - bomb.y;
-
-            const distance =
-                Math.sqrt(
-                    dx * dx +
-                    dy * dy
-                );
-
-
-            if (
-                distance <
-                bomb.radius
-            ) {
+            if (distance < bomb.radius + 10) {
 
                 bombSound.currentTime = 0;
 
@@ -769,6 +756,16 @@ function sliceFruit() {
 // ===============================
 
 function update() {
+    // COMBO TIMER
+    if (combo > 0) {
+        comboTimer--;
+
+        if (comboTimer <= 0) {
+            combo = 0;
+
+            document.getElementById("combo").textContent = combo;
+        }
+    }
 
     // SPAWN
 
