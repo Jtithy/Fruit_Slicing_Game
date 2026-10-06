@@ -511,11 +511,11 @@ canvas.addEventListener(
         const rect =
             canvas.getBoundingClientRect();
 
-        mouse.x =
-            e.clientX - rect.left;
+        previousMouse.x = mouse.x;
+        previousMouse.y = mouse.y;
 
-        mouse.y =
-            e.clientY - rect.top;
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
 
         if (mouse.isDown) {
 
@@ -574,13 +574,11 @@ canvas.addEventListener(
         const rect =
             canvas.getBoundingClientRect();
 
-        mouse.x =
-            e.touches[0].clientX -
-            rect.left;
+        previousMouse.x = mouse.x;
+        previousMouse.y = mouse.y;
 
-        mouse.y =
-            e.touches[0].clientY -
-            rect.top;
+        mouse.x = e.touches[0].clientX - rect.left;
+        mouse.y = e.touches[0].clientY - rect.top;
 
         if (mouse.isDown) {
 
