@@ -151,3 +151,56 @@ canvas {
     box-shadow:
         0 2px 0 #9b6200;
 }
+
+#playAgainBtn {
+    display: none;
+
+    position: absolute;
+
+    top: 58%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    padding: 16px 40px;
+
+    background: linear-gradient(#ffcf40,
+            #e89b00);
+
+    color: white;
+
+    border: 3px solid #fff3b0;
+
+    border-radius: 12px;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    z-index: 30;
+
+    box-shadow:
+        0 5px 0 #9b6200,
+        0 0 25px rgba(255, 190, 0, 0.5);
+
+    text-shadow:
+        2px 2px 3px #714500;
+}
+
+#playAgainBtn:hover {
+    transform:
+        translate(-50%, -50%) scale(1.06);
+
+    box-shadow:
+        0 5px 0 #9b6200,
+        0 0 35px rgba(255, 210, 0, 0.8);
+}
+
+#playAgainBtn:active {
+    transform:
+        translate(-50%, -50%) scale(0.98);
+}

@@ -832,11 +832,7 @@ function sliceFruit() {
     );
 }
 
-
-// ===============================
 // UPDATE GAME
-// ===============================
-
 function update() {
     // COMBO TIMER
     if (combo > 0) {
@@ -972,9 +968,7 @@ function draw() {
         canvas.height
     );
 
-
     // FRUITS
-
     fruits.forEach(
         fruit => fruit.draw()
     );
@@ -988,7 +982,6 @@ function draw() {
     bombs.forEach(
         bomb => bomb.draw()
     );
-
 
     // PARTICLES
     particles.forEach(
@@ -1020,11 +1013,12 @@ function draw() {
     }
 
     // GAME OVER
+    if (paused && !gameOver) {
 
-    if (gameOver) {
+        ctx.save();
 
         ctx.fillStyle =
-            "rgba(0, 0, 0, 0.65)";
+            "rgba(0, 0, 0, 0.60)";
 
         ctx.fillRect(
             0,
@@ -1033,32 +1027,32 @@ function draw() {
             canvas.height
         );
 
+        ctx.textAlign = "center";
 
-        ctx.fillStyle =
-            "white";
-
-        ctx.textAlign =
-            "center";
-
+        ctx.fillStyle = "white";
 
         ctx.font =
-            "50px Arial";
+            "bold 50px Arial";
+
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = "black";
 
         ctx.fillText(
-            "GAME OVER",
+            "PAUSED",
             canvas.width / 2,
-            canvas.height / 2 - 30
+            canvas.height / 2 - 20
         );
 
-
         ctx.font =
-            "25px Arial";
+            "22px Arial";
 
         ctx.fillText(
-            "Press R to Restart",
+            "Press P to Resume",
             canvas.width / 2,
             canvas.height / 2 + 30
         );
+
+        ctx.restore();
     }
 }
 
