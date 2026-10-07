@@ -249,7 +249,7 @@ class Fruit {
 
 class SlicedFruit {
 
-    constructor(x, y, image, side) {
+    constructor(x, y, image, side, angle) {
 
         this.x = x;
         this.y = y;
@@ -260,25 +260,28 @@ class SlicedFruit {
 
         this.side = side;
 
+        this.angle = angle;
+
+        // Direction perpendicular to the swipe
+        const cutX = Math.cos(angle);
+        const cutY = Math.sin(angle);
+
+        const separation =
+            side === "left" ? -1 : 1;
+
         this.vx =
-            side === "left"
-                ? -3 - Math.random() * 2
-                : 3 + Math.random() * 2;
+            cutX * separation * (2 + Math.random() * 2);
 
         this.vy =
-            -2 - Math.random() * 3;
+            cutY * separation * (2 + Math.random() * 2) - 2;
 
         this.gravity = 0.3;
 
         this.rotation =
-            side === "left"
-                ? -0.2
-                : 0.2;
+            (Math.random() - 0.5) * 0.3;
 
         this.rotationSpeed =
-            side === "left"
-                ? -0.08
-                : 0.08;
+            (Math.random() - 0.5) * 0.15;
 
         this.life = 70;
     }
@@ -291,8 +294,7 @@ class SlicedFruit {
 
         this.vy += this.gravity;
 
-        this.rotation +=
-            this.rotationSpeed;
+        this.rotation += this.rotationSpeed;
 
         this.life--;
     }
@@ -309,6 +311,9 @@ class SlicedFruit {
         ctx.rotate(
             this.rotation
         );
+
+        // Rotate the cutting direction
+        ctx.rotate(this.angle);
 
         ctx.beginPath();
 
@@ -552,6 +557,9 @@ canvas.addEventListener(
         mouse.y =
             e.touches[0].clientY -
             rect.top;
+
+        previousMouse.x = mouse.x;
+        previousMouse.y = mouse.y;
     }
 );
 
@@ -641,6 +649,11 @@ function sliceFruit() {
                 mouse.y
             );
 
+            const swipeAngle = Math.atan2(
+                mouse.y - previousMouse.y,
+                mouse.x - previousMouse.x
+            );
+
             if (distance < fruit.radius + 10) {
 
                 combo++;
@@ -688,7 +701,8 @@ function sliceFruit() {
                         fruit.x,
                         fruit.y,
                         fruit.image,
-                        "left"
+                        "left",
+                        swipeAngle
                     )
                 );
 
@@ -697,7 +711,8 @@ function sliceFruit() {
                         fruit.x,
                         fruit.y,
                         fruit.image,
-                        "right"
+                        "right",
+                        swipeAngle
                     )
                 );
 
@@ -1122,6 +1137,11 @@ function restartGame() {
     bombs = [];
     particles = [];
     trail = [];
+
+    comboTimer = 0;
+
+    previousMouse.x = mouse.x;
+    previousMouse.y = mouse.y;
 
     score = 0;
     combo = 0;
