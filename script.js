@@ -82,6 +82,8 @@ document.getElementById("startBtn").onclick = () => {
     paused = false;
     gameOver = false;
 
+    document.getElementById("playAgainBtn").style.display = "none";
+
     document.getElementById("startBtn").style.display = "none";
 };
 
@@ -910,7 +912,6 @@ function update() {
 
 
     // MISSED FRUITS
-
     fruits =
         fruits.filter(
             fruit => {
@@ -940,6 +941,10 @@ function update() {
                     if (lives <= 0) {
 
                         gameOver = true;
+
+                        document.getElementById(
+                            "playAgainBtn"
+                        ).style.display = "block";
 
                         gameOverSound.currentTime = 0;
 
@@ -1044,12 +1049,27 @@ function draw() {
         );
 
         ctx.font =
-            "22px Arial";
+            "bold 28px Arial";
+
+        ctx.fillStyle =
+            "#ffd700";
 
         ctx.fillText(
-            "Press P to Resume",
+            "Score: " + score,
             canvas.width / 2,
-            canvas.height / 2 + 30
+            canvas.height / 2 + 20
+        );
+
+        ctx.font =
+            "20px Arial";
+
+        ctx.fillStyle =
+            "white";
+
+        ctx.fillText(
+            "High Score: " + highScore,
+            canvas.width / 2,
+            canvas.height / 2 + 55
         );
 
         ctx.restore();
@@ -1235,6 +1255,17 @@ function restartGame() {
     document.getElementById(
         "combo"
     ).textContent = combo;
+
+    document.getElementById(
+        "playAgainBtn"
+    ).onclick = () => {
+
+        document.getElementById(
+            "playAgainBtn"
+        ).style.display = "none";
+
+        restartGame();
+    };
 }
 
 
