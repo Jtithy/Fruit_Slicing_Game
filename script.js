@@ -23,6 +23,7 @@ let fruits = [];
 let slicedFruits = [];
 let bombs = [];
 let particles = [];
+let juiceParticles = [];
 let trail = [];
 
 let score = 0;
@@ -75,7 +76,6 @@ let previousMouse = {
 };
 
 // START BUTTON
-
 document.getElementById("startBtn").onclick = () => {
 
     started = true;
@@ -85,11 +85,7 @@ document.getElementById("startBtn").onclick = () => {
     document.getElementById("startBtn").style.display = "none";
 };
 
-
-// ===============================
 // PARTICLE CLASS
-// ===============================
-
 class Particle {
 
     constructor(x, y, color) {
@@ -145,11 +141,67 @@ class Particle {
     }
 }
 
+// JUICE PARTICLE CLASS
+class JuiceParticle {
 
-// ===============================
+    constructor(x, y, color) {
+
+        this.x = x;
+        this.y = y;
+
+        this.radius =
+            Math.random() * 3 + 1;
+
+        this.vx =
+            (Math.random() - 0.5) * 10;
+
+        this.vy =
+            (Math.random() - 0.5) * 10;
+
+        this.gravity = 0.2;
+
+        this.life = 35;
+
+        this.color = color;
+    }
+
+    update() {
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        this.vy += this.gravity;
+
+        this.life--;
+    }
+
+    draw() {
+
+        ctx.save();
+
+        ctx.globalAlpha =
+            this.life / 35;
+
+        ctx.fillStyle =
+            this.color;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            this.x,
+            this.y,
+            this.radius,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+        ctx.restore();
+    }
+}
+
 // CREATE PARTICLES
-// ===============================
-
 function createParticles(x, y, color) {
 
     for (let i = 0; i < 35; i++) {
@@ -164,11 +216,21 @@ function createParticles(x, y, color) {
     }
 }
 
+function createJuice(x, y, color) {
 
-// ===============================
+    for (let i = 0; i < 20; i++) {
+
+        juiceParticles.push(
+            new JuiceParticle(
+                x,
+                y,
+                color
+            )
+        );
+    }
+}
+
 // FRUIT CLASS
-// ===============================
-
 class Fruit {
 
     constructor() {
@@ -694,6 +756,13 @@ function sliceFruit() {
                     fruit.y,
                     fruit.color
                 );
+
+                createJuice(
+                    fruit.x,
+                    fruit.y,
+                    fruit.color
+                );
+
                 sliceFlash = 5;
 
                 slicedFruits.push(
@@ -781,7 +850,6 @@ function update() {
     }
 
     // SPAWN
-
     spawnTimer++;
 
     if (spawnTimer >= spawnSpeed) {
@@ -791,9 +859,7 @@ function update() {
         spawnTimer = 0;
     }
 
-
     // FRUITS
-
     fruits.forEach(
         fruit => fruit.update()
     );
@@ -810,21 +876,27 @@ function update() {
 
 
     // BOMBS
-
     bombs.forEach(
         bomb => bomb.update()
     );
 
 
     // PARTICLES
-
     particles.forEach(
         particle => particle.update()
     );
 
+    juiceParticles.forEach(
+        particle => particle.update()
+    );
+
+    juiceParticles =
+        juiceParticles.filter(
+            particle =>
+                particle.life > 0
+        );
 
     // REMOVE PARTICLES
-
     particles =
         particles.filter(
             particle =>
@@ -833,7 +905,6 @@ function update() {
 
 
     // REMOVE BOMBS
-
     bombs =
         bombs.filter(
             bomb =>
@@ -891,10 +962,7 @@ function update() {
 }
 
 
-// ===============================
 // DRAW GAME
-// ===============================
-
 function draw() {
 
     ctx.clearRect(
@@ -917,15 +985,17 @@ function draw() {
     );
 
     // BOMBS
-
     bombs.forEach(
         bomb => bomb.draw()
     );
 
 
     // PARTICLES
-
     particles.forEach(
+        particle => particle.draw()
+    );
+
+    juiceParticles.forEach(
         particle => particle.draw()
     );
 
@@ -1136,6 +1206,7 @@ function restartGame() {
     slicedFruits = [];
     bombs = [];
     particles = [];
+    juiceParticles = [];
     trail = [];
 
     comboTimer = 0;
