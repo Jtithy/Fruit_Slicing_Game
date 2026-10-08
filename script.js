@@ -307,13 +307,10 @@ class Fruit {
     }
 }
 
-// ===============================
 // SLICED FRUIT CLASS
-// ===============================
-
 class SlicedFruit {
 
-    constructor(x, y, image, side, angle) {
+    constructor(x, y, image, side, angle, color) {
 
         this.x = x;
         this.y = y;
@@ -326,18 +323,26 @@ class SlicedFruit {
 
         this.angle = angle;
 
-        // Direction perpendicular to the swipe
-        const cutX = Math.cos(angle);
-        const cutY = Math.sin(angle);
+        this.color = color;
 
         const separation =
             side === "left" ? -1 : 1;
 
+        const perpendicularX =
+            -Math.sin(angle);
+
+        const perpendicularY =
+            Math.cos(angle);
+
         this.vx =
-            cutX * separation * (2 + Math.random() * 2);
+            perpendicularX *
+            separation *
+            (2 + Math.random() * 2);
 
         this.vy =
-            cutY * separation * (2 + Math.random() * 2) - 2;
+            perpendicularY *
+            separation *
+            (2 + Math.random() * 2) - 2;
 
         this.gravity = 0.3;
 
@@ -358,7 +363,8 @@ class SlicedFruit {
 
         this.vy += this.gravity;
 
-        this.rotation += this.rotationSpeed;
+        this.rotation +=
+            this.rotationSpeed;
 
         this.life--;
     }
@@ -376,8 +382,12 @@ class SlicedFruit {
             this.rotation
         );
 
-        // Rotate the cutting direction
-        ctx.rotate(this.angle);
+        ctx.rotate(
+            this.angle
+        );
+
+        // Fruit half
+        ctx.save();
 
         ctx.beginPath();
 
@@ -439,12 +449,36 @@ class SlicedFruit {
         );
 
         ctx.restore();
+
+
+        // Cut surface
+        ctx.beginPath();
+
+        ctx.moveTo(0, -this.radius);
+        ctx.lineTo(0, this.radius);
+
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.lineWidth = 6;
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+
+        // Juice glow
+        ctx.beginPath();
+
+        ctx.moveTo(0, -this.radius + 5);
+        ctx.lineTo(0, this.radius - 5);
+
+        ctx.strokeStyle = "rgba(255, 220, 120, 0.8)";
+        ctx.lineWidth = 3;
+
+        ctx.stroke();
+
+        ctx.restore();
     }
 }
 
-// ===============================
 // Combo
-// ===============================
 function drawCombo() {
 
     if (combo < 2) {
@@ -765,7 +799,7 @@ function sliceFruit() {
                     fruit.color
                 );
 
-                sliceFlash = 5;
+                sliceFlash = 8;
 
                 slicedFruits.push(
                     new SlicedFruit(
@@ -773,7 +807,8 @@ function sliceFruit() {
                         fruit.y,
                         fruit.image,
                         "left",
-                        swipeAngle
+                        swipeAngle,
+                        fruit.color
                     )
                 );
 
@@ -783,7 +818,8 @@ function sliceFruit() {
                         fruit.y,
                         fruit.image,
                         "right",
-                        swipeAngle
+                        swipeAngle,
+                        fruit.color
                     )
                 );
 
@@ -826,10 +862,12 @@ function sliceFruit() {
 
                 gameOver = true;
 
+                document.getElementById(
+                    "playAgainBtn"
+                ).style.display = "block";
+
                 return false;
             }
-
-            return true;
         }
     );
 }
@@ -1018,12 +1056,12 @@ function draw() {
     }
 
     // GAME OVER
-    if (paused && !gameOver) {
+    if (gameOver) {
 
         ctx.save();
 
         ctx.fillStyle =
-            "rgba(0, 0, 0, 0.60)";
+            "rgba(0, 0, 0, 0.70)";
 
         ctx.fillRect(
             0,
@@ -1043,9 +1081,9 @@ function draw() {
         ctx.shadowColor = "black";
 
         ctx.fillText(
-            "PAUSED",
+            "GAME OVER",
             canvas.width / 2,
-            canvas.height / 2 - 20
+            canvas.height / 2 - 70
         );
 
         ctx.font =
@@ -1057,7 +1095,7 @@ function draw() {
         ctx.fillText(
             "Score: " + score,
             canvas.width / 2,
-            canvas.height / 2 + 20
+            canvas.height / 2 - 20
         );
 
         ctx.font =
@@ -1069,7 +1107,52 @@ function draw() {
         ctx.fillText(
             "High Score: " + highScore,
             canvas.width / 2,
-            canvas.height / 2 + 55
+            canvas.height / 2 + 15
+        );
+
+        ctx.restore();
+    }
+
+    // PAUSE SCREEN
+    if (paused && !gameOver) {
+
+        ctx.save();
+
+        ctx.fillStyle =
+            "rgba(0, 0, 0, 0.60)";
+
+        ctx.fillRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        ctx.textAlign =
+            "center";
+
+        ctx.fillStyle =
+            "white";
+
+        ctx.font =
+            "bold 50px Arial";
+
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = "black";
+
+        ctx.fillText(
+            "PAUSED",
+            canvas.width / 2,
+            canvas.height / 2 - 20
+        );
+
+        ctx.font =
+            "22px Arial";
+
+        ctx.fillText(
+            "Press P to Resume",
+            canvas.width / 2,
+            canvas.height / 2 + 30
         );
 
         ctx.restore();
@@ -1209,11 +1292,11 @@ document.addEventListener(
     }
 );
 
+document.getElementById(
+    "playAgainBtn"
+).style.display = "none";
 
-// ===============================
 // RESTART
-// ===============================
-
 function restartGame() {
 
     fruits = [];
@@ -1255,19 +1338,19 @@ function restartGame() {
     document.getElementById(
         "combo"
     ).textContent = combo;
+}
+
+// PLAY AGAIN BUTTON
+document.getElementById(
+    "playAgainBtn"
+).onclick = () => {
 
     document.getElementById(
         "playAgainBtn"
-    ).onclick = () => {
+    ).style.display = "none";
 
-        document.getElementById(
-            "playAgainBtn"
-        ).style.display = "none";
-
-        restartGame();
-    };
-}
-
+    restartGame();
+};
 
 // ===============================
 // RESTART WITH R
