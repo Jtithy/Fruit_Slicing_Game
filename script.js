@@ -151,20 +151,18 @@ class JuiceParticle {
         this.x = x;
         this.y = y;
 
-        this.radius =
-            Math.random() * 3 + 1;
+        this.color = color;
 
         this.vx =
-            (Math.random() - 0.5) * 10;
+            (Math.random() - 0.5) * 8;
 
         this.vy =
-            (Math.random() - 0.5) * 10;
+            (Math.random() - 0.5) * 8;
 
-        this.gravity = 0.2;
+        this.size =
+            Math.random() * 4 + 2;
 
-        this.life = 35;
-
-        this.color = color;
+        this.life = 30;
     }
 
     update() {
@@ -172,7 +170,7 @@ class JuiceParticle {
         this.x += this.vx;
         this.y += this.vy;
 
-        this.vy += this.gravity;
+        this.vy += 0.15;
 
         this.life--;
     }
@@ -182,17 +180,16 @@ class JuiceParticle {
         ctx.save();
 
         ctx.globalAlpha =
-            this.life / 35;
+            this.life / 30;
 
-        ctx.fillStyle =
-            this.color;
+        ctx.fillStyle = this.color;
 
         ctx.beginPath();
 
         ctx.arc(
             this.x,
             this.y,
-            this.radius,
+            this.size,
             0,
             Math.PI * 2
         );
@@ -271,6 +268,31 @@ class Fruit {
                 fruitImages.length
             )
             ];
+
+        const juiceColors = {
+
+            "assets/apple.png": "#ff3b30",
+
+            "assets/banana.png": "#ffd93d",
+
+            "assets/grapes.png": "#8e44ad",
+
+            "assets/orange.png": "#ff8c00",
+
+            "assets/watermelon.png": "#ff4d6d",
+
+            "assets/pineapple.png": "#ffd700",
+
+            "assets/strawberry.png": "#ff1744",
+
+            "assets/kiwi.png": "#8bc34a"
+        };
+
+        this.juiceColor =
+            juiceColors[this.image.src.replace(
+                location.origin + "/",
+                ""
+            )] || "#ffffff";
     }
 
     update() {
@@ -796,7 +818,7 @@ function sliceFruit() {
                 createJuice(
                     fruit.x,
                     fruit.y,
-                    fruit.color
+                    fruit.juiceColor
                 );
 
                 sliceFlash = 8;
