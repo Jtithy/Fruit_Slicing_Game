@@ -1181,86 +1181,58 @@ function draw() {
     }
 }
 
-
-// ===============================
 // DRAW SWORD TRAIL
-// ===============================
 
 function drawTrail() {
+    if (trail.length < 2) return;
 
-    if (!mouse.isDown || trail.length < 2) {
-        return;
-    }
-
-    // Glow
     ctx.save();
 
+    // Outer glow
     ctx.beginPath();
+    ctx.moveTo(trail[0].x, trail[0].y);
 
-    ctx.moveTo(
-        trail[0].x,
-        trail[0].y
-    );
+    for (let i = 1; i < trail.length - 1; i++) {
+        const midX = (trail[i].x + trail[i + 1].x) / 2;
+        const midY = (trail[i].y + trail[i + 1].y) / 2;
 
-    for (let i = 1; i < trail.length; i++) {
-        ctx.lineTo(
+        ctx.quadraticCurveTo(
             trail[i].x,
-            trail[i].y
+            trail[i].y,
+            midX,
+            midY
         );
     }
 
-    ctx.strokeStyle =
-        "rgba(120, 220, 255, 0.25)";
+    const last = trail[trail.length - 1];
+    ctx.lineTo(last.x, last.y);
 
+    ctx.strokeStyle = "rgba(0, 200, 255, 0.35)";
     ctx.lineWidth = 18;
-
     ctx.lineCap = "round";
-
     ctx.lineJoin = "round";
-
-    ctx.shadowBlur = 25;
-
-    ctx.shadowColor =
-        "rgba(100, 220, 255, 1)";
-
+    ctx.shadowColor = "#00d9ff";
+    ctx.shadowBlur = 20;
     ctx.stroke();
 
-
-    // Main sword
+    // Bright inner trail
     ctx.beginPath();
-
-    ctx.moveTo(
-        trail[0].x,
-        trail[0].y
-    );
+    ctx.moveTo(trail[0].x, trail[0].y);
 
     for (let i = 1; i < trail.length; i++) {
-        ctx.lineTo(
-            trail[i].x,
-            trail[i].y
-        );
+        ctx.lineTo(trail[i].x, trail[i].y);
     }
 
-    ctx.strokeStyle =
-        "rgba(230, 250, 255, 0.95)";
-
-    ctx.lineWidth = 5;
-
-    ctx.shadowBlur = 12;
-
-    ctx.shadowColor =
-        "#ffffff";
-
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+    ctx.lineWidth = 4;
+    ctx.shadowColor = "#ffffff";
+    ctx.shadowBlur = 10;
     ctx.stroke();
 
     ctx.restore();
 }
 
-
-// ===============================
 // DRAW CURSOR
-// ===============================
-
 function drawCursor() {
 
     if (!mouse.isDown) {
@@ -1423,11 +1395,7 @@ setInterval(
     15000
 );
 
-
-// ===============================
 // GAME LOOP
-// ===============================
-
 function gameLoop() {
 
     if (
@@ -1447,6 +1415,9 @@ function gameLoop() {
     drawCombo();
 
     drawTrail();
+    if (!mouse.isDown && trail.length > 0) {
+        trail.shift();
+    }
 
     drawCursor();
 
