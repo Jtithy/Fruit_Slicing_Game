@@ -125,23 +125,15 @@ class Particle {
     }
 
     draw() {
-
         ctx.save();
 
-        ctx.globalAlpha = this.life / 45;
-
-        ctx.fillStyle = this.color;
+        ctx.globalAlpha = Math.max(0, this.life / 45);
+        ctx.fillStyle = this.color || "#ff4500";
+        ctx.shadowColor = this.color || "#ff4500";
+        ctx.shadowBlur = 15;
 
         ctx.beginPath();
-
-        ctx.arc(
-            this.x,
-            this.y,
-            this.radius,
-            0,
-            Math.PI * 2
-        );
-
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();
@@ -536,10 +528,7 @@ function drawCombo() {
     ctx.restore();
 }
 
-// ===============================
 // BOMB CLASS
-// ===============================
-
 class Bomb {
 
     constructor() {
@@ -583,6 +572,25 @@ class Bomb {
             this.radius * 2,
             this.radius * 2
         );
+    }
+}
+
+// EXPLOSION
+function createExplosion(x, y) {
+    for (let i = 0; i < 50; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 8 + 2;
+
+        const particle = new Particle(x, y,
+            Math.random() > 0.5 ? "#ff4500" : "#ffd700"
+        );
+
+        particle.vx = Math.cos(angle) * speed;
+        particle.vy = Math.sin(angle) * speed;
+        particle.radius = Math.random() * 6 + 2;
+        particle.life = 40;
+
+        particles.push(particle);
     }
 }
 
@@ -651,11 +659,7 @@ canvas.addEventListener(
     }
 );
 
-
-// ===============================
 // TOUCH EVENTS
-// ===============================
-
 canvas.addEventListener(
     "touchstart",
     (e) => {
@@ -879,36 +883,31 @@ function sliceFruit() {
 
     // BOMBS
 
-    bombs = bombs.filter(
-        (bomb) => {
+    bombs = bombs.filter((bomb) => {
+        const distance = distancePointToSegment(
+            bomb.x,
+            bomb.y,
+            previousMouse.x,
+            previousMouse.y,
+            mouse.x,
+            mouse.y
+        );
 
-            const distance = distancePointToSegment(
-                bomb.x,
-                bomb.y,
-                previousMouse.x,
-                previousMouse.y,
-                mouse.x,
-                mouse.y
-            );
+        if (distance < bomb.radius + 10) {
+            createExplosion(bomb.x, bomb.y);
 
-            if (distance < bomb.radius + 10) {
+            bombSound.currentTime = 0;
+            bombSound.play().catch(() => { });
 
-                bombSound.currentTime = 0;
+            gameOver = true;
 
-                bombSound.play().catch(
-                    () => { }
-                );
+            document.getElementById("playAgainBtn").style.display = "block";
 
-                gameOver = true;
-
-                document.getElementById(
-                    "playAgainBtn"
-                ).style.display = "block";
-
-                return false;
-            }
+            return false;
         }
-    );
+
+        return true;
+    });
 }
 
 // BONUS
@@ -1220,7 +1219,6 @@ function draw() {
 }
 
 // DRAW SWORD TRAIL
-
 function drawTrail() {
     if (trail.length < 2) return;
 
@@ -1302,11 +1300,7 @@ function drawCursor() {
     ctx.restore();
 }
 
-
-// ===============================
 // PAUSE
-// ===============================
-
 document.addEventListener(
     "keydown",
     (e) => {
@@ -1384,10 +1378,7 @@ document.getElementById(
     restartGame();
 };
 
-// ===============================
 // RESTART WITH R
-// ===============================
-
 document.addEventListener(
     "keydown",
     (e) => {
@@ -1405,11 +1396,7 @@ document.addEventListener(
     }
 );
 
-
-// ===============================
 // DIFFICULTY INCREASE
-// ===============================
-
 setInterval(
     () => {
 
