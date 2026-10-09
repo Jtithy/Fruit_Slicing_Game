@@ -43,9 +43,14 @@ let gameOver = false;
 
 // DIFFICULTY
 let spawnTimer = 0;
-let spawnSpeed = 60;
+let spawnSpeed = 90;
+let bombChance = 0.12;
 
-let bombChance = 0.15;
+//BONUS
+let bonusText = "";
+let bonusX = 0;
+let bonusY = 0;
+let bonusTimer = 0;
 
 // FRUIT IMAGES
 const fruitImages = [
@@ -581,32 +586,22 @@ class Bomb {
     }
 }
 
-
-// ===============================
 // SPAWN OBJECT
-// ===============================
-
 function spawnObject() {
 
-    if (Math.random() < bombChance) {
+    const fruitCount = Math.floor(Math.random() * 3) + 2;
 
-        bombs.push(
-            new Bomb()
-        );
+    for (let i = 0; i < fruitCount; i++) {
 
-    } else {
-
-        fruits.push(
-            new Fruit()
-        );
+        if (Math.random() < bombChance) {
+            bombs.push(new Bomb());
+        } else {
+            fruits.push(new Fruit());
+        }
     }
 }
 
-
-// ===============================
 // MOUSE EVENTS
-// ===============================
-
 canvas.addEventListener(
     "mousedown",
     () => {
@@ -756,6 +751,7 @@ function sliceFruit() {
         return;
     }
 
+    let slicedCount = 0;
     // FRUITS
     fruits = fruits.filter(
         (fruit) => {
@@ -777,6 +773,7 @@ function sliceFruit() {
             if (distance < fruit.radius + 10) {
 
                 combo++;
+                slicedCount++;
                 comboTimer = comboTimeLimit;
 
                 score +=
@@ -859,6 +856,26 @@ function sliceFruit() {
         }
     );
 
+    // BONUS
+    if (slicedCount >= 2) {
+        const bonus = slicedCount * 20;
+
+        score += bonus;
+
+        bonusText = `+${bonus} BONUS!`;
+        bonusX = canvas.width / 2;
+        bonusY = canvas.height * 0.35;
+        bonusTimer = 60;
+
+        document.getElementById("score").textContent = score;
+
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("highscore", highScore);
+
+            document.getElementById("highscore").textContent = highScore;
+        }
+    }
 
     // BOMBS
 
@@ -892,6 +909,27 @@ function sliceFruit() {
             }
         }
     );
+}
+
+// BONUS
+function drawBonus() {
+    if (bonusTimer <= 0) return;
+
+    ctx.save();
+
+    ctx.globalAlpha = Math.min(1, bonusTimer / 15);
+    ctx.textAlign = "center";
+    ctx.font = "bold 30px Arial";
+    ctx.fillStyle = "#ffd700";
+    ctx.shadowColor = "#ff8c00";
+    ctx.shadowBlur = 18;
+
+    ctx.fillText(bonusText, bonusX, bonusY);
+
+    ctx.restore();
+
+    bonusY -= 1;
+    bonusTimer--;
 }
 
 // UPDATE GAME
@@ -1413,6 +1451,7 @@ function gameLoop() {
     draw();
 
     drawCombo();
+    drawBonus();
 
     drawTrail();
     if (!mouse.isDown && trail.length > 0) {
