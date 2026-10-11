@@ -237,28 +237,19 @@ class Fruit {
 
         this.radius = 30;
 
-        this.x =
-            Math.random() *
-            (canvas.width - 100) +
-            50;
+        this.x = Math.random() * (canvas.width - 100) + 50;
 
-        this.y =
-            canvas.height + 50;
+        this.y = canvas.height + 50 + Math.random() * 100;
 
-        this.vx =
-            (Math.random() - 0.5) * 10;
+        this.vx = (Math.random() - 0.5) * 10;
 
-        this.vy =
-            -(Math.random() * 5 + 13);
+        this.vy = -(Math.random() * 5 + 13);
 
-        this.color =
-            `hsl(${Math.random() * 360}, 80%, 60%)`;
+        this.color = `hsl(${Math.random() * 360}, 80%, 60%)`;
 
-        this.rotation =
-            Math.random() * Math.PI * 2;
+        this.rotation = Math.random() * Math.PI * 2;
 
-        this.rotationSpeed =
-            (Math.random() - 0.5) * 0.15;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.15;
 
         this.image = new Image();
 
@@ -599,19 +590,39 @@ function createExplosion(x, y) {
 }
 
 // SPAWN OBJECT
+
 function spawnObject() {
+    const pattern = Math.floor(Math.random() * 3);
+    const count = Math.floor(Math.random() * 3) + 2;
 
-    const fruitCount = Math.floor(Math.random() * 3) + 2;
-
-    for (let i = 0; i < fruitCount; i++) {
+    for (let i = 0; i < count; i++) {
+        let fruit;
 
         if (Math.random() < bombChance) {
             bombs.push(new Bomb());
-        } else {
-            fruits.push(new Fruit());
+            continue;
         }
+
+        fruit = new Fruit();
+
+        if (pattern === 0) {
+            // Spread Wave
+            fruit.x = 60 + (i / (count - 1)) * (canvas.width - 120);
+            fruit.vx = (Math.random() - 0.5) * 3;
+        } else if (pattern === 1) {
+            // Cluster Wave
+            fruit.x = canvas.width / 2 + (Math.random() - 0.5) * 180;
+            fruit.vx = (Math.random() - 0.5) * 7;
+        } else {
+            // Mixed Wave
+            fruit.x = Math.random() * (canvas.width - 100) + 50;
+            fruit.vx = (Math.random() - 0.5) * 10;
+        }
+
+        fruits.push(fruit);
     }
 }
+
 
 // MOUSE EVENTS
 canvas.addEventListener(
