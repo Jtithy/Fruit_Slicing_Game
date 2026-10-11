@@ -34,6 +34,9 @@ let sliceFlash = 0;
 let comboTimer = 0;
 const comboTimeLimit = 90;
 
+let bestCombo = Number(localStorage.getItem("bestCombo")) || 0;
+
+
 let highScore =
     Number(localStorage.getItem("highscore")) || 0;
 
@@ -835,7 +838,14 @@ function sliceFruit() {
                 combo++;
                 slicedCount++;
                 comboTimer = comboTimeLimit;
+                if (combo > bestCombo) {
+                    bestCombo = combo;
 
+                    localStorage.setItem(
+                        "bestCombo",
+                        bestCombo
+                    );
+                }
 
                 score += 10 * combo;
 
@@ -1249,6 +1259,17 @@ function draw() {
             canvas.width / 2,
             canvas.height / 2 + 15
         );
+
+
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "#ffd700";
+
+        ctx.fillText(
+            "Best Combo: " + bestCombo,
+            canvas.width / 2,
+            canvas.height / 2 + 50
+        );
+
 
         ctx.restore();
     }
