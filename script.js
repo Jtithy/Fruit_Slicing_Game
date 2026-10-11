@@ -52,6 +52,10 @@ let bonusX = 0;
 let bonusY = 0;
 let bonusTimer = 0;
 
+//Screen Shake
+let shakeDuration = 0;
+let shakeStrength = 0;
+
 // FRUIT IMAGES
 const fruitImages = [
     "assets/apple.png",
@@ -896,6 +900,9 @@ function sliceFruit() {
         if (distance < bomb.radius + 10) {
             createExplosion(bomb.x, bomb.y);
 
+            shakeDuration = 18;
+            shakeStrength = 12;
+
             bombSound.currentTime = 0;
             bombSound.play().catch(() => { });
 
@@ -1062,6 +1069,18 @@ function update() {
 
 // DRAW GAME
 function draw() {
+    //SCREEN SHAKE
+    if (shakeDuration > 0) {
+        ctx.save();
+
+        const shakeX =
+            (Math.random() - 0.5) * shakeStrength;
+
+        const shakeY =
+            (Math.random() - 0.5) * shakeStrength;
+
+        ctx.translate(shakeX, shakeY);
+    }
 
     ctx.clearRect(
         0,
@@ -1216,6 +1235,18 @@ function draw() {
 
         ctx.restore();
     }
+
+    // SCREEN SHAKE RESET
+    if (shakeDuration > 0) {
+        ctx.restore();
+
+        shakeDuration--;
+        shakeStrength *= 0.9;
+
+        if (shakeDuration === 0) {
+            shakeStrength = 0;
+        }
+    }
 }
 
 // DRAW SWORD TRAIL
@@ -1342,6 +1373,9 @@ function restartGame() {
     lives = 3;
 
     spawnTimer = 0;
+
+    shakeDuration = 0;
+    shakeStrength = 0;
 
     spawnSpeed = 60;
     bombChance = 0.15;
