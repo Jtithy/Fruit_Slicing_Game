@@ -321,6 +321,42 @@ class Fruit {
     }
 }
 
+//Golden Fruit Class
+
+class GoldenFruit extends Fruit {
+    constructor() {
+        super();
+
+        this.image = new Image();
+        this.image.src = "assets/golden_fruit.png";
+
+        this.radius = 34;
+        this.juiceColor = "#ffd700";
+        this.bonusPoints = 50;
+    }
+
+    draw() {
+        ctx.save();
+
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+
+        ctx.shadowColor = "#ffd700";
+        ctx.shadowBlur = 22;
+
+        ctx.drawImage(
+            this.image,
+            -this.radius,
+            -this.radius,
+            this.radius * 2,
+            this.radius * 2
+        );
+
+        ctx.restore();
+    }
+}
+
+
 // SLICED FRUIT CLASS
 class SlicedFruit {
 
@@ -595,6 +631,11 @@ function spawnObject() {
     const pattern = Math.floor(Math.random() * 3);
     const count = Math.floor(Math.random() * 3) + 2;
 
+    if (Math.random() < 0.08) {
+        fruits.push(new GoldenFruit());
+        return;
+    }
+
     for (let i = 0; i < count; i++) {
         let fruit;
 
@@ -795,9 +836,19 @@ function sliceFruit() {
                 slicedCount++;
                 comboTimer = comboTimeLimit;
 
-                score +=
-                    10 * combo;
 
+                score += 10 * combo;
+
+                if (fruit instanceof GoldenFruit) {
+                    score += fruit.bonusPoints;
+
+                    bonusText = "+50 GOLDEN BONUS!";
+                    bonusX = fruit.x;
+                    bonusY = fruit.y;
+                    bonusTimer = 60;
+
+                    createExplosion(fruit.x, fruit.y);
+                }
 
                 document.getElementById(
                     "score"
